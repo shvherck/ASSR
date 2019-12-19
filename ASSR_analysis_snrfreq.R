@@ -14,6 +14,7 @@ library(readxl)
 # reshaping
 library(stringr)      # split data into numbers/letters
 library(reshape)
+library(dplyr)
 # plotting
 library(car) #qqplot
 library(ggplot2)
@@ -82,15 +83,16 @@ ASSRdata_all_4              = subset(ASSRdata_all, freq%in%c('4'))
 ASSRdata_all_4              = subset(ASSRdata_all_4, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
 ASSRdata_all_4$row          = 1:nrow(ASSRdata_all_4)                                 #know row number of Cook's data points (see 'check assumptions')
 ASSRdata_all_4_cook         = ASSRdata_all_4[ -c(219, 234), ]                   #remove data points based on Cook's distance
-ASSRdata_all_4_final_cook   = subset(ASSRdata_all_4_cook, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
+ASSRdata_all_4_final_cook   = ASSRdata_all_4_cook
 ASSRdata_all_4$logsnr       = log(ASSRdata_all_4$snr)
 ASSRdata_all_4_final        = ASSRdata_all_4
+ASSRdata_all_4_test         = subset(ASSRdata_all_4_final_cook, !(subject%in%c('i035', 'i142', 'i070', 'i027')))
+
 ASSRdata_all_20             = subset(ASSRdata_all, freq%in%c('20'))                  
 ASSRdata_all_20             = subset(ASSRdata_all_20, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
 ASSRdata_all_20$row         = 1:nrow(ASSRdata_all_20)                                
-ASSRdata_all_20_cook        = ASSRdata_all_20[ -c(131, 247, 48), ]
-ASSRdata_all_20_final       = subset(ASSRdata_all_20, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
-ASSRdata_all_20_final_cook  = subset(ASSRdata_all_20_cook, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
+ASSRdata_all_20_final       = ASSRdata_all_20
+ASSRdata_all_20_test        = subset(ASSRdata_all_20_final, !(subject%in%c('i035', 'i142', 'i070', 'i027')))
 
 
 ASSRdata_all_AM4       = subset(ASSRdata_all, cond%in%c('AM4'))
@@ -145,34 +147,47 @@ setwd("C:/Users/u0125029/Documents/3. Onderzoek/3. Post-test 2019/5. Analyse/ASS
 # AM4
 boxplot1         = ggplot(ASSRdata_all_AM4, aes(x=group, y=snr, fill=prepost)) + 
   geom_boxplot(position=position_dodge(0.8)) +                                        # position dodge + geom_jitter(position_dodge) is for
-#  geom_jitter(position=position_dodge(0.8)) +                                        # getting dots with multiple groups (so that dots for)
+  #  geom_jitter(position=position_dodge(0.8)) +                                        # getting dots with multiple groups (so that dots for)
   labs(title="AM4",x="group", y = "snr (dB)", fill="test phase") + theme_classic() +  # pre and post are also separated per group
-  coord_cartesian(ylim=c(-10,25))
-# print(boxplot1)
+  coord_cartesian(ylim=c(-10,25)) 
+print(boxplot1)
+
+row.names(ASSRdata_all_AM4) <- as.character(paste(ASSRdata_all_AM4$subject,"_", ASSRdata_all_AM4$cond, "_" ,ASSRdata_all_AM4$prepost)) 
+Boxplot(data=ASSRdata_all_AM4, snr ~ prepost*group)
 
 # AM20
 boxplot2         = ggplot(ASSRdata_all_AM20, aes(x=group, y=snr, fill=prepost)) + 
   geom_boxplot(position=position_dodge(0.8)) +                                        
-#  geom_jitter(position=position_dodge(0.8)) +                                         
+  #  geom_jitter(position=position_dodge(0.8)) +                                         
   labs(title="AM20",x="group", y = "snr (dB)", fill="test phase") + theme_classic() +
-  coord_cartesian(ylim=c(-10,25))
-#print(boxplot2)
+  coord_cartesian(ylim=c(-10,25)) 
+print(boxplot2)
+
+row.names(ASSRdata_all_AM20) <- as.character(paste(ASSRdata_all_AM20$subject,"_", ASSRdata_all_AM20$cond, "_" ,ASSRdata_all_AM20$prepost)) 
+Boxplot(data=ASSRdata_all_AM20, snr ~ prepost*group)
+
 
 # PULS4
 boxplot3         = ggplot(ASSRdata_all_PULS4, aes(x=group, y=snr, fill=prepost)) + 
   geom_boxplot(position=position_dodge(0.8)) +                                        
-#  geom_jitter(position=position_dodge(0.8)) +                                         
+  #  geom_jitter(position=position_dodge(0.8)) +                                         
   labs(title="PULS4",x="group", y = "snr (dB)", fill="test phase") + theme_classic() +
-  coord_cartesian(ylim=c(-10,25))
-#print(boxplot3)
+  coord_cartesian(ylim=c(-10,25)) 
+print(boxplot3)
+
+row.names(ASSRdata_all_PULS4) <- as.character(paste(ASSRdata_all_PULS4$subject,"_", ASSRdata_all_PULS4$cond, "_" ,ASSRdata_all_PULS4$prepost)) 
+Boxplot(data=ASSRdata_all_PULS4, snr ~ prepost*group)
 
 # PULS20
 boxplot4         = ggplot(ASSRdata_all_PULS20, aes(x=group, y=snr, fill=prepost)) + 
   geom_boxplot(position=position_dodge(0.8)) +                                        
-#  geom_jitter(position=position_dodge(0.8)) +                                         
+  #  geom_jitter(position=position_dodge(0.8)) +                                         
   labs(title="PULS20",x="group", y = "snr (dB)", fill="test phase") + theme_classic() +
-  coord_cartesian(ylim=c(-10,25))
-#print(boxplot4)
+  coord_cartesian(ylim=c(-10,25)) 
+print(boxplot4)
+
+row.names(ASSRdata_all_PULS20) <- as.character(paste(ASSRdata_all_PULS20$subject,"_", ASSRdata_all_PULS20$cond, "_" ,ASSRdata_all_PULS20$prepost)) 
+Boxplot(data=ASSRdata_all_PULS20, snr ~ prepost*group)
 
 
 tiff("snrfreq_4Hz.tiff",width=1360,height=1360)                 #save figure in wd
@@ -413,6 +428,13 @@ summary(fit4)
 
 Anova(fit4, type = "III", test.statistic = "F")
 
+# with outlying subjects removed (no difference)
+options(contrasts=c("contr.sum", "contr.poly"))
+fit4             = lmer(snr  ~ group*stimtype*prepost + (1|subject), data=ASSRdata_all_4_final_cook)
+summary(fit4)
+
+Anova(fit4, type = "III", test.statistic = "F")
+
 # post-hoc
 AM4              = subset(ASSRdata_all_4_final_cook, stimtype%in%c('AM'))
 mean(AM4$snr)
@@ -428,6 +450,14 @@ fit20             = lmer(snr  ~ group*stimtype*prepost + (1|subject), data=ASSRd
 summary(fit20)
 
 Anova(fit20, type = "III", test.statistic = "F")
+
+# with outlying subjects removed (less significant results)
+options(contrasts=c("contr.sum", "contr.poly"))
+fit20             = lmer(snr  ~ group*stimtype*prepost + (1|subject), data=ASSRdata_all_20_test)
+summary(fit20)
+
+Anova(fit20, type = "III", test.statistic = "F")
+
 
 # post-hoc
 AM20              = subset(ASSRdata_all_20_final, stimtype%in%c('AM'))
@@ -618,3 +648,79 @@ ph20$contrasts
 
 
 
+
+# pogingen ----------------
+
+# AM4
+# boxplot with outliers
+boxplot1         = ggplot(ASSRdata_all_AM4, aes(x=group, y=snr, fill=prepost)) + 
+  geom_boxplot(position=position_dodge(0.8)) +                                        # position dodge + geom_jitter(position_dodge) is for
+  #  geom_jitter(position=position_dodge(0.8)) +                                        # getting dots with multiple groups (so that dots for)
+  labs(title="AM4",x="group", y = "snr (dB)", fill="test phase") + theme_classic() +  # pre and post are also separated per group
+  coord_cartesian(ylim=c(-10,25)) +
+  geom_text(aes(group = interaction(group, prepost),
+                label = ifelse(test = snr > quantile(snr, 0.75) + 1.5*IQR(snr)|snr < quantile(snr, 0.25) -1.5*IQR(snr),
+                               yes  = paste(subject, ",", round(snr, 1)),
+                               no   = '')),
+            position = position_dodge(width = 0.75),
+            hjust = -.2,
+            size = 3)
+print(boxplot1)
+# plots subjects and snr's but for wrong points
+
+# AM20
+# boxplot with outliers
+boxplot2         = ggplot(ASSRdata_all_AM20, aes(x=group, y=snr, fill=prepost)) + 
+  geom_boxplot(position=position_dodge(0.8)) +                                        
+  #  geom_jitter(position=position_dodge(0.8)) +                                         
+  labs(title="AM20",x="group", y = "snr (dB)", fill="test phase") + theme_classic() +
+  coord_cartesian(ylim=c(-10,25)) +
+  stat_summary(
+    aes(label = round(stat(y), 1)),
+    geom = "text", 
+    fun.y = function(y) { o <- boxplot.stats(y)$out; if(length(o) == 0) NA else o },
+    hjust = 0.5
+  )
+print(boxplot2)
+# plots snr's for correct points but not subjects
+
+# PULS20 
+# boxplot with outliers
+boxplot4         = ggplot(ASSRdata_all_PULS20, aes(x=group, y=snr, fill=prepost)) + 
+  geom_boxplot(position=position_dodge(0.8)) +                                        
+  #  geom_jitter(position=position_dodge(0.8)) +                                         
+  labs(title="PULS20",x="group", y = "snr (dB)", fill="test phase") + theme_classic() +
+  coord_cartesian(ylim=c(-10,25)) +
+  stat_summary(
+    aes(label = round(stat(y), 1)),
+    geom = "text", 
+    fun.y = function(y) { o <- boxplot.stats(y)$out; if(length(o) == 0) NA else o },
+    hjust = 0.5
+  )
+print(boxplot4)
+
+# PULS4
+# boxplot with outliers
+boxplot3         = ggplot(ASSRdata_all_PULS4, aes(x=group, y=snr, fill=prepost)) + 
+  geom_boxplot(position=position_dodge(0.8)) +                                        
+  #  geom_jitter(position=position_dodge(0.8)) +                                         
+  labs(title="PULS4",x="group", y = "snr (dB)", fill="test phase") + theme_classic() +
+  coord_cartesian(ylim=c(-10,25)) +
+  stat_summary(
+    aes(label = round(stat(y), 1)),
+    geom = "text", 
+    fun.y = function(y) { o <- boxplot.stats(y)$out; if(length(o) == 0) NA else o },
+    hjust = 0.5
+  )
+print(boxplot3)
+
+# PULS20 line plot
+PULS20summary            = cast(ASSRdata_all_PULS20_melt, group*prepost ~ ., c(mean,sd))
+PULS20summary$group = as.factor(PULS20summary$group)
+PULS20summary$prepost = as.factor(PULS20summary$prepost)
+
+ggplot(PULS20summary, aes(x=prepost, y=mean, group=group, color=group)) + 
+  geom_line() +
+  geom_point()+
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                position=position_dodge(0.05))

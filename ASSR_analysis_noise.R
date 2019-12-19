@@ -82,13 +82,16 @@ ASSRdata_all_4              = subset(ASSRdata_all_4, group%in%c('GG_EE', 'GG_NE'
 ASSRdata_all_4$row          = 1:nrow(ASSRdata_all_4)                                 #know row number of Cook's data points (see 'check assumptions')
 ASSRdata_all_4_cook         = ASSRdata_all_4[ -c(75, 251, 267), ]
 ASSRdata_all_4$lognoiseamp  = log(ASSRdata_all_4$noiseamp)
-ASSRdata_all_4_final        = subset(ASSRdata_all_4, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
+ASSRdata_all_4_final        = ASSRdata_all_4
+ASSRdata_all_4_test         = subset(ASSRdata_all_4_final, !(subject%in%c('i028', 'i037', 'i097', 'i091')))
+
 ASSRdata_all_20             = subset(ASSRdata_all, freq%in%c('20')) 
 ASSRdata_all_20             = subset(ASSRdata_all_20, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
 ASSRdata_all_20$row         = 1:nrow(ASSRdata_all_20)                                
 ASSRdata_all_20_cook        = ASSRdata_all_20[ -c(116, 156, 174), ] 
 ASSRdata_all_20$lognoiseamp = log(ASSRdata_all_20$noiseamp)
-ASSRdata_all_20_final       = subset(ASSRdata_all_20, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
+ASSRdata_all_20_final       = ASSRdata_all_20
+ASSRdata_all_20_test        = subset(ASSRdata_all_20_final, !(subject%in%c('i028', 'i037', 'i097', 'i091')))
 
 ASSRdata_all_AM4                      = subset(ASSRdata_all, cond%in%c('AM4'))
 ASSRdata_all_AM4_final                = subset(ASSRdata_all_AM4, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
@@ -134,12 +137,19 @@ boxplot1         = ggplot(ASSRdata_all_AM4, aes(x=group, y=noiseamp, fill=prepos
   labs(title="AM4",x="group", y = "noise amplitude (µV)", fill="test phase") + theme_classic()   # pre and post are also separated per group
 #print(boxplot1)
 
+row.names(ASSRdata_all_AM4) <- as.character(paste(ASSRdata_all_AM4$subject,"_", ASSRdata_all_AM4$cond, "_" ,ASSRdata_all_AM4$prepost)) 
+Boxplot(data=ASSRdata_all_AM4, noiseamp ~ prepost*group)
+
 # AM20
 boxplot2         = ggplot(ASSRdata_all_AM20, aes(x=group, y=noiseamp, fill=prepost)) + 
   geom_boxplot(position=position_dodge(0.8)) +                                        
   #  geom_jitter(position=position_dodge(0.8)) +                                         
   labs(title="AM20",x="group", y = "noise amplitude (µV)", fill="test phase") + theme_classic() 
 #print(boxplot2)
+
+row.names(ASSRdata_all_AM20) <- as.character(paste(ASSRdata_all_AM20$subject,"_", ASSRdata_all_AM20$cond, "_" ,ASSRdata_all_AM20$prepost)) 
+Boxplot(data=ASSRdata_all_AM20, noiseamp ~ prepost*group)
+
 
 # PULS4
 boxplot3         = ggplot(ASSRdata_all_PULS4, aes(x=group, y=noiseamp, fill=prepost)) + 
@@ -148,12 +158,19 @@ boxplot3         = ggplot(ASSRdata_all_PULS4, aes(x=group, y=noiseamp, fill=prep
   labs(title="PULS4",x="group", y = "noise amplitude (µV)", fill="test phase") + theme_classic() 
 #print(boxplot3)
 
+row.names(ASSRdata_all_PULS4) <- as.character(paste(ASSRdata_all_PULS4$subject,"_", ASSRdata_all_PULS4$cond, "_" ,ASSRdata_all_PULS4$prepost)) 
+Boxplot(data=ASSRdata_all_PULS4, noiseamp ~ prepost*group)
+
 # PULS20
 boxplot4         = ggplot(ASSRdata_all_PULS20, aes(x=group, y=noiseamp, fill=prepost)) + 
   geom_boxplot(position=position_dodge(0.8)) +                                        
   #  geom_jitter(position=position_dodge(0.8)) +                                         
   labs(title="PULS20",x="group", y = "noise amplitude (µV)p", fill="test phase") + theme_classic() 
 #print(boxplot4)
+
+row.names(ASSRdata_all_PULS20) <- as.character(paste(ASSRdata_all_PULS20$subject,"_", ASSRdata_all_PULS20$cond, "_" ,ASSRdata_all_PULS20$prepost)) 
+Boxplot(data=ASSRdata_all_PULS20, noiseamp ~ prepost*group)
+
 
 tiff("noiseamp_allconditions_box_preliminary.tiff",width=1360,height=1360)                #save figure in wd
 print(grid.arrange(boxplot1, boxplot2, boxplot3, boxplot4, ncol = 2, top="Boxplots"))
@@ -408,6 +425,13 @@ summary(fit4)
 
 Anova(fit4, type = "III", test.statistic = "F")
 
+# without outlying subjects (less significant)
+options(contrasts=c("contr.sum", "contr.poly"))
+fit4             = lmer(lognoiseamp  ~ group*stimtype*prepost + (1|subject), data=ASSRdata_all_4_test)
+summary(fit4)
+
+Anova(fit4, type = "III", test.statistic = "F")
+
 # post-hoc
 ph4              = emmeans(fit4, specs = pairwise  ~ group:stimtype, adjust = "holm")              
 ph4$contrasts
@@ -417,6 +441,13 @@ ph4$contrasts
 # 20 Hz
 options(contrasts=c("contr.sum", "contr.poly"))
 fit20             = lmer(lognoiseamp  ~ group*stimtype*prepost + (1|subject), data=ASSRdata_all_20_final)
+summary(fit20)
+
+Anova(fit20, type = "III", test.statistic = "F")
+
+# without outlying subjects
+options(contrasts=c("contr.sum", "contr.poly"))
+fit20             = lmer(lognoiseamp  ~ group*stimtype*prepost + (1|subject), data=ASSRdata_all_20_test)
 summary(fit20)
 
 Anova(fit20, type = "III", test.statistic = "F")

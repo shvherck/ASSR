@@ -81,13 +81,16 @@ ASSRdata_all$channel  = factor(ASSRdata_all$channel)
 ASSRdata_all_4             = subset(ASSRdata_all, freq%in%c('4'))  
 ASSRdata_all_4             = subset(ASSRdata_all_4, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
 ASSRdata_all_4$row         = 1:nrow(ASSRdata_all_4)                                 #know row number of Cook's data points (see 'check assumptions')
-ASSRdata_all_4_final       = subset(ASSRdata_all_4, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
+ASSRdata_all_4_final       = ASSRdata_all_4
+ASSRdata_all_4_test        = subset(ASSRdata_all_4_final, !(subject%in%c('i054', 'i122')))
+
 ASSRdata_all_20            = subset(ASSRdata_all, freq%in%c('20'))                  
 ASSRdata_all_20            = subset(ASSRdata_all_20, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
 ASSRdata_all_20$row        = 1:nrow(ASSRdata_all_20)                                
 ASSRdata_all_20_cook       = ASSRdata_all_20[ -c(292, 55, 56), ] 
 ASSRdata_all_20$logrespamp = log(ASSRdata_all_20$respamp)
-ASSRdata_all_20_final      = subset(ASSRdata_all_20, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
+ASSRdata_all_20_final      = ASSRdata_all_20s
+ASSRdata_all_20_test       = subset(ASSRdata_all_20_final, !(subject%in%c('i054', 'i122')))
 
 
 
@@ -138,6 +141,9 @@ boxplot1         = ggplot(ASSRdata_all_AM4, aes(x=group, y=respamp, fill=prepost
   coord_cartesian(ylim=c(0,3)) 
 print(boxplot1)
 
+row.names(ASSRdata_all_AM4) <- as.character(paste(ASSRdata_all_AM4$subject,"_", ASSRdata_all_AM4$cond, "_" ,ASSRdata_all_AM4$prepost)) 
+Boxplot(data=ASSRdata_all_AM4, respamp ~ prepost*group)
+
 # AM20
 boxplot2         = ggplot(ASSRdata_all_AM20, aes(x=group, y=respamp, fill=prepost)) + 
   geom_boxplot(position=position_dodge(0.8)) +                                        
@@ -145,6 +151,9 @@ boxplot2         = ggplot(ASSRdata_all_AM20, aes(x=group, y=respamp, fill=prepos
   labs(title="AM20",x="group", y = "response amplitude (µV)", fill="test phase") + theme_classic() + 
   coord_cartesian(ylim=c(0,1))
 print(boxplot2)
+
+row.names(ASSRdata_all_AM20) <- as.character(paste(ASSRdata_all_AM20$subject,"_", ASSRdata_all_AM20$cond, "_" ,ASSRdata_all_AM20$prepost)) 
+Boxplot(data=ASSRdata_all_AM20, respamp ~ prepost*group)
 
 # PULS4
 boxplot3         = ggplot(ASSRdata_all_PULS4, aes(x=group, y=respamp, fill=prepost)) + 
@@ -154,6 +163,10 @@ boxplot3         = ggplot(ASSRdata_all_PULS4, aes(x=group, y=respamp, fill=prepo
   coord_cartesian(ylim=c(0,5))
 #print(boxplot3)
 
+row.names(ASSRdata_all_PULS4) <- as.character(paste(ASSRdata_all_PULS4$subject,"_", ASSRdata_all_PULS4$cond, "_" ,ASSRdata_all_PULS4$prepost)) 
+Boxplot(data=ASSRdata_all_PULS4, respamp ~ prepost*group)
+
+
 # PULS20
 boxplot4         = ggplot(ASSRdata_all_PULS20, aes(x=group, y=respamp, fill=prepost)) + 
   geom_boxplot(position=position_dodge(0.8)) +                                        
@@ -161,6 +174,9 @@ boxplot4         = ggplot(ASSRdata_all_PULS20, aes(x=group, y=respamp, fill=prep
   labs(title="PULS20",x="group", y = "response amplitude (µV)p", fill="test phase") + theme_classic() +
   coord_cartesian(ylim=c(0,1))
 print(boxplot4)
+
+row.names(ASSRdata_all_PULS20) <- as.character(paste(ASSRdata_all_PULS20$subject,"_", ASSRdata_all_PULS20$cond, "_" ,ASSRdata_all_PULS20$prepost)) 
+Boxplot(data=ASSRdata_all_PULS20, respamp ~ prepost*group)
 
 
 tiff("respamp_allconditions_box_preliminary.tiff",width=1360,height=1360)                 #save figure in wd
@@ -498,6 +514,13 @@ summary(fit4)
 
 Anova(fit4, type = "III", test.statistic = "F")
 
+# without outlying subjects (no difference)
+options(contrasts=c("contr.sum", "contr.poly"))
+fit4             = lmer(respamp  ~ group*stimtype*prepost + (1|subject), data=ASSRdata_all_4_test)
+summary(fit4)
+
+Anova(fit4, type = "III", test.statistic = "F")
+
 # post-hoc
 AM4              = subset(ASSRdata_all_4_final, stimtype%in%c('AM'))
 median(AM4$respamp)
@@ -518,6 +541,14 @@ fit20             = lmer(logrespamp  ~ group*stimtype*prepost + (1|subject), dat
 summary(fit20)
 
 Anova(fit20, type = "III", test.statistic = "F")
+
+# without outlying subjects
+options(contrasts=c("contr.sum", "contr.poly"))
+fit20             = lmer(logrespamp  ~ group*stimtype*prepost + (1|subject), data=ASSRdata_all_20_test)
+summary(fit20)
+
+Anova(fit20, type = "III", test.statistic = "F")
+
 
 # post-hoc
 AM20              = subset(ASSRdata_all_20_final, stimtype%in%c('AM'))
