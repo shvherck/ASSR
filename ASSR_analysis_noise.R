@@ -83,7 +83,7 @@ ASSRdata_all_4$row          = 1:nrow(ASSRdata_all_4)                            
 ASSRdata_all_4_cook         = ASSRdata_all_4[ -c(75, 251, 267), ]
 ASSRdata_all_4$lognoiseamp  = log(ASSRdata_all_4$noiseamp)
 ASSRdata_all_4_final        = ASSRdata_all_4
-ASSRdata_all_4_test         = subset(ASSRdata_all_4_final, !(subject%in%c('i028', 'i037', 'i097', 'i091')))
+ASSRdata_all_4_test         = subset(ASSRdata_all_4_final, !(subject%in%c('i037', 'i097')))
 
 ASSRdata_all_20             = subset(ASSRdata_all, freq%in%c('20')) 
 ASSRdata_all_20             = subset(ASSRdata_all_20, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
@@ -91,7 +91,7 @@ ASSRdata_all_20$row         = 1:nrow(ASSRdata_all_20)
 ASSRdata_all_20_cook        = ASSRdata_all_20[ -c(116, 156, 174), ] 
 ASSRdata_all_20$lognoiseamp = log(ASSRdata_all_20$noiseamp)
 ASSRdata_all_20_final       = ASSRdata_all_20
-ASSRdata_all_20_test        = subset(ASSRdata_all_20_final, !(subject%in%c('i028', 'i037', 'i097', 'i091')))
+ASSRdata_all_20_test        = subset(ASSRdata_all_20_final, !(subject%in%c('i037', 'i097')))
 
 ASSRdata_all_AM4                      = subset(ASSRdata_all, cond%in%c('AM4'))
 ASSRdata_all_AM4_final                = subset(ASSRdata_all_AM4, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))

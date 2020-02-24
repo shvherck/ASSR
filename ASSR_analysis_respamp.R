@@ -89,18 +89,21 @@ ASSRdata_all_20            = subset(ASSRdata_all_20, group%in%c('GG_EE', 'GG_NE'
 ASSRdata_all_20$row        = 1:nrow(ASSRdata_all_20)                                
 ASSRdata_all_20_cook       = ASSRdata_all_20[ -c(292, 55, 56), ] 
 ASSRdata_all_20$logrespamp = log(ASSRdata_all_20$respamp)
-ASSRdata_all_20_final      = ASSRdata_all_20s
+ASSRdata_all_20_final      = ASSRdata_all_20
 ASSRdata_all_20_test       = subset(ASSRdata_all_20_final, !(subject%in%c('i054', 'i122')))
 
 
 
 ASSRdata_all_AM4                     = subset(ASSRdata_all, cond%in%c('AM4'))
 ASSRdata_all_AM4_final               = subset(ASSRdata_all_AM4, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
+
 ASSRdata_all_AM20                    = subset(ASSRdata_all, cond%in%c('AM20'))
 ASSRdata_all_AM20_final              = subset(ASSRdata_all_AM20, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
 ASSRdata_all_AM20_final$logrespamp   = log(ASSRdata_all_AM20_final$respamp)
+
 ASSRdata_all_PULS4                   = subset(ASSRdata_all, cond%in%c('PULS4'))
 ASSRdata_all_PULS4_final             = subset(ASSRdata_all_PULS4, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
+
 ASSRdata_all_PULS20                  = subset(ASSRdata_all, cond%in%c('PULS20'))
 ASSRdata_all_PULS20_final            = subset(ASSRdata_all_PULS20, group%in%c('GG_EE', 'GG_NE', 'ActiveControl'))
 ASSRdata_all_PULS20_final$logrespamp = log(ASSRdata_all_PULS20_final$respamp)
