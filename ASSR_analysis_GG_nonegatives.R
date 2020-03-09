@@ -1,10 +1,10 @@
 # --------------------------------------------------------- #
-# name              ASSR_analysis_GG.R                      #
+# name              ASSR_analysis_GG_nonegatives.R          #
 # created by        Shauni Van Herck                        #
 # description       used to analyse ASSR data (GG effect)   #
 # version.string    R version 3.5.1 (2018-07-02)            #
 # platform          x86_64-w64-mingw32                      #
-# date created      08/01/2020                              #
+# date created      09/03/2020                              #
 # --------------------------------------------------------- #
 
 # load libraries -------------------
@@ -30,6 +30,8 @@ library(corrr)
 setwd("C:/Users/u0125029/Documents/3. Onderzoek/3. Post-test 2019/5. Analyse/ASSR/R")
 
 d              = read.csv("ASSRdata.csv", header=TRUE, sep=",")
+
+d$AssrHt2BiasedRecordingSnrDb[d$AssrHt2BiasedRecordingSnrDb < 0] <- 0
 
 # only keep rows for electrodes 'Right', 'Left' and 'All'
 # only keep rows for frequencies 4 & 20
@@ -63,7 +65,7 @@ d$prepost      = sapply(strsplit(d$Recording, split='_', fixed=TRUE), function(x
 # only keep relevant columns
 d              = d[c("subject", "group", "condition", "stimtype", "frequency", "prepost", "Channel", "AssrHt2BiasedRecordingSnrDb")]
 
-GG                    = read.csv("GG_exposure.csv")
+GG             = read.csv("GG_exposure.csv")
 d$GG_hours     = GG$HoursPlayed[match(unlist(d$subject), GG$iCode)]   
 d$GG_levels    = GG$LevelsPlayed[match(unlist(d$subject), GG$iCode)]
 d$GG_progress  = GG$GameProgress[match(unlist(d$subject), GG$iCode)]
@@ -87,51 +89,51 @@ d_20                 = subset(d_all_wide, freq%in%c('20'))
 
 corr4                = as.data.frame(d_4[c("hours", "levels", "progress", "accuracy", "diff")]) # needs to be data frame so corr recognizes column names to use
 corr20               = as.data.frame(d_20[c("hours", "levels", "progress", "accuracy", "diff")])
- 
+
 # plots ------------------
 
 setwd("C:/Users/u0125029/Documents/3. Onderzoek/3. Post-test 2019/5. Analyse/ASSR/R/Plots")
 
 ## 4 Hz
 
-tiff("corr4_hours_withnegatives.tiff",width=400,height=400)                 #save figure in wd
+tiff("corr4_hours.tiff",width=400,height=400)                 #save figure in wd
 plot(corr4$hours, corr4$diff,  main="posttest - pretest (4 Hz) vs. hours played GG", xlab="Hours played GG", ylab="Posttest - pretest (4 Hz) (snr dB)")
 abline(lm(diff ~ hours, data=corr4))
 dev.off()
 
-tiff("corr4_levels_withnegatives.tiff",width=400,height=400) 
+tiff("corr4_levels.tiff",width=400,height=400) 
 plot(corr4$levels, corr4$diff,  main="posttest - pretest (4 Hz) vs. levels played GG", xlab="Levels played GG", ylab="Posttest - pretest (4 Hz) (snr dB)")
 abline(lm(diff ~ levels, data=corr4))
 dev.off()
 
-tiff("corr4_progress_withnegatives.tiff",width=400,height=400)
+tiff("corr4_progress.tiff",width=400,height=400)
 plot(corr4$progress, corr4$diff,  main="posttest - pretest (4 Hz) vs. progress GG", xlab="Progress GG", ylab="Posttest - pretest (4 Hz) (snr dB)")
 abline(lm(diff ~ progress, data=corr4))
 dev.off()
 
-tiff("corr4_accuracy_withnegatives.tiff",width=400,height=400)
-plot(corr4$accuracy, corr4$diff,  main="posttest - pretest (4 Hz) vs. accuracy GG", xlab="Accuracy GG", ylab="Posttest - pretest (4 Hz) (snr dB)")
+tiff("corr4_accuracy.tiff",width=400,height=400)
+plot(corr4$accuracy, corr4$diff,  main="posttest - pretest (4 Hz) vs. accuracy GG", xlab="Accuracy GG", ylab="Posttest - pretest (4 Hz) (snr dB")
 abline(lm(diff ~ accuracy, data=corr4))
 dev.off()
 
 ## 20 Hz
 
-tiff("corr20_hours_withnegatives.tiff",width=400,height=400)                 #save figure in wd
+tiff("corr20_hours.tiff",width=400,height=400)                 #save figure in wd
 plot(corr20$hours, corr20$diff,  main="posttest - pretest (20 Hz) vs. hours played GG", xlab="Hours played GG", ylab="Posttest - pretest (20 Hz) (snr dB)")
 abline(lm(diff ~ hours, data=corr20))
 dev.off()
 
-tiff("corr20_levels_withnegatives.tiff",width=400,height=400) 
+tiff("corr20_levels.tiff",width=400,height=400) 
 plot(corr20$levels, corr20$diff,  main="posttest - pretest (20 Hz) vs. levels played GG", xlab="Levels played GG", ylab="Posttest - pretest (20 Hz) (snr dB)")
 abline(lm(diff ~ levels, data=corr20))
 dev.off()
 
-tiff("corr20_progress_withnegatives.tiff",width=400,height=400)
+tiff("corr20_progress.tiff",width=400,height=400)
 plot(corr20$progress, corr20$diff,  main="posttest - pretest (20 Hz) vs. progress GG", xlab="Progress GG", ylab="Posttest - pretest (20 Hz) (snr dB)")
 abline(lm(diff ~ progress, data=corr20))
 dev.off()
 
-tiff("corr20_accuracy_withnegatives.tiff",width=400,height=400)
+tiff("corr20_accuracy.tiff",width=400,height=400)
 plot(corr20$accuracy, corr20$diff,  main="posttest - pretest (20 Hz) vs. accuracy GG", xlab="Accuracy GG", ylab="Posttest - pretest (20 Hz) (snr dB")
 abline(lm(diff ~ accuracy, data=corr20))
 dev.off()
@@ -164,4 +166,3 @@ round(cor(corr20, method = c("pearson"), use="complete.obs"), 2)
 rquery.cormat(corr20)
 
 chart.Correlation(corr20, histogram=TRUE, header=TRUE)
-

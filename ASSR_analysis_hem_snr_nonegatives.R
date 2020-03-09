@@ -149,7 +149,7 @@ tiff("snr_4Hz_hem.tiff",width=1600,height=800)                 #save figure in w
 print(grid.arrange(boxplot1, boxplot3, ncol = 2, top="4 Hz"))
 dev.off()
 
-tiff("snrfreq_20Hz_hem.tiff",width=1600,height=800)                 #save figure in wd
+tiff("snr_20Hz_hem.tiff",width=1600,height=800)                 #save figure in wd
 print(grid.arrange(boxplot2, boxplot4, ncol = 2, top="20 Hz"))
 dev.off()
 
